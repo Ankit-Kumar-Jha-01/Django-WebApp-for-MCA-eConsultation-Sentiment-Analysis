@@ -1,116 +1,345 @@
-<div align="center">
+# 💬 MCA eConsultation — Sentiment Analysis Web Application
 
-# awesome-project
+A Django-based web application that integrates a fine-tuned **DistilBERT sentiment analysis model** to classify MCA eConsultation comments as **Positive, Neutral, or Negative**.
 
-<p align="center">A blazing fast, developer-friendly tool that makes your workflow 10x better.</p>
+This repository focuses on the **application and deployment side** of the project, including the Django backend, frontend interface, model integration, prediction workflow, and web application configuration.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-
-![TypeScript](https://img.shields.io/badge/-TypeScript-555?style=flat-square&logo=typescript) ![React](https://img.shields.io/badge/-React-555?style=flat-square&logo=react) ![Node.js](https://img.shields.io/badge/-Node.js-555?style=flat-square&logo=node.js) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-555?style=flat-square&logo=postgresql)
-
-[🌐 View Demo](https://awesome-project.vercel.app) · [🐛 Report Bug](https://github.com/janedeveloper/awesome-project/issues) · [✨ Request Feature](https://github.com/janedeveloper/awesome-project/issues)
-
-</div>
+> **ML Model:** The sentiment classification model was trained separately and integrated into this Django application for inference.
 
 ---
 
-## 📋 Table of Contents
+## 🔗 Related Repository
 
-- [🌐 Demo](#demo)
-- [📸 Screenshots](#screenshots)
-- [⚙️ Prerequisites](#prerequisites)
-- [🚀 Installation](#installation)
-- [💻 Usage](#usage)
-- [✨ Features](#features)
-- [🗺️ Roadmap](#roadmap)
-- [🤝 Contributing](#contributing)
-- [❓ FAQ](#faq)
-- [📄 License](#license)
-- [👤 Contact](#contact)
-- [🙏 Acknowledgements](#acknowledgements)
+### 🧠 NLP Model & Training Pipeline
 
-## 🌐 Demo
+The complete dataset preparation, preprocessing, augmentation, model training, evaluation, and visualization pipeline is available here:
 
-[https://awesome-project.vercel.app](https://awesome-project.vercel.app)
+**[NLP-model-for-MCA-eConsultation-Sentiment-Analysis](https://github.com/Ankit-Kumar-Jha-01/NLP-model-for-MCA-eConsultation-Sentiment-Analysis)**
 
-## 📸 Screenshots
+---
 
-> Add your screenshots here.
+## 📌 Overview
 
-![Screenshot](./screenshots/screenshot.png)
+The application provides a web interface where users can enter an MCA eConsultation comment and receive a predicted sentiment.
 
-## ⚙️ Prerequisites
+### Supported Sentiments
 
-- Node.js 18+
-- npm 9+
+* 🟢 **Positive**
+* ⚪ **Neutral**
+* 🔴 **Negative**
 
-## 🚀 Installation
+The trained DistilBERT model is loaded by the Django backend and used to perform sentiment inference on new comments.
 
-```bash
-git clone https://github.com/janedeveloper/awesome-project.git
-cd awesome-project
-npm install
-```
-
-## 💻 Usage
-
-```bash
-npm run dev
-```
+---
 
 ## ✨ Features
 
-- ✅ Zero-config setup
-- ✅ Real-time collaboration
-- ✅ Dark mode support
-- ✅ Plugin ecosystem
-
-## 🗺️ Roadmap
-
-- [ ] Mobile app support
-- [ ] Plugin marketplace
-- [ ] SSO integration
-
-See the [open issues](https://github.com/janedeveloper/awesome-project/issues) for proposed features and known issues.
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## ❓ FAQ
-
-**Q: How do I get started?**
-A: Follow the installation guide above.
-
-**Q: How do I report a bug?**
-A: Open an issue on the [GitHub Issues](https://github.com/janedeveloper/awesome-project/issues) page.
-
-**Q: Can I contribute?**
-A: Yes! See the Contributing section above.
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 👤 Contact
-
-**Jane Developer**
-- GitHub: [@janedeveloper](https://github.com/janedeveloper)
-- Email: [jane@example.com](mailto:jane@example.com)
-- Project: [https://github.com/janedeveloper/awesome-project](https://github.com/janedeveloper/awesome-project)
-
-## 🙏 Acknowledgements
-
-- shields.io
-- Vercel
-- open-source community
+* 💬 Sentiment prediction for MCA eConsultation comments
+* 🤖 Fine-tuned DistilBERT model integration
+* 🌐 Django-based backend
+* 🖥️ Web-based frontend
+* ⚡ Real-time prediction
+* 🔄 Reusable model inference pipeline
+* 📊 Sentiment result visualization
+* 📱 Responsive user interface
 
 ---
 
-<div align="center">Made with ❤️ by Jane Developer</div>
+## 🏗️ Application Architecture
+
+```text
+                    User
+                     │
+                     ▼
+              Django Frontend
+                     │
+                     ▼
+              Django Backend
+                     │
+                     ▼
+             Text Preprocessing
+                     │
+                     ▼
+          DistilBERT Tokenizer
+                     │
+                     ▼
+           Fine-tuned DistilBERT
+                     │
+                     ▼
+             Sentiment Prediction
+                     │
+                     ▼
+          Positive / Neutral / Negative
+                     │
+                     ▼
+                 Web UI
+```
+
+---
+
+## 🔄 Prediction Workflow
+
+```text
+User enters comment
+        ↓
+Django receives the input
+        ↓
+Input is preprocessed
+        ↓
+Tokenizer converts text into model inputs
+        ↓
+Fine-tuned DistilBERT performs inference
+        ↓
+Prediction probabilities are generated
+        ↓
+Highest-probability sentiment is selected
+        ↓
+Result is displayed on the webpage
+```
+
+---
+
+## 🛠️ Technologies Used
+
+| Category             | Technology                |
+| -------------------- | ------------------------- |
+| Backend              | Django                    |
+| Programming Language | Python                    |
+| NLP Model            | DistilBERT                |
+| Deep Learning        | PyTorch                   |
+| NLP Framework        | Hugging Face Transformers |
+| Frontend             | HTML, CSS, JavaScript     |
+| Template Engine      | Django Templates          |
+| Version Control      | Git & GitHub              |
+
+---
+
+## 📂 Project Structure
+
+```text
+MCA-eConsultation-Sentiment-Analysis-Django/
+│
+├── manage.py
+│
+├── project/
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── mainApp/
+│   ├── views.py
+│   ├── urls.py
+│   ├── models.py
+│   └── ...
+│
+├── templates/
+│   └── ...
+│
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+├── ml_model/
+│   └── ...
+│
+├── requirements.txt
+└── README.md
+```
+
+> The exact structure may vary depending on the current implementation.
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Ankit-Kumar-Jha-01/MCA-eConsultation-Sentiment-Analysis-Django.git
+cd MCA-eConsultation-Sentiment-Analysis-Django
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+Activate it:
+
+**Windows**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux / macOS**
+
+```bash
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Apply migrations
+
+```bash
+python manage.py migrate
+```
+
+### 5. Start the development server
+
+```bash
+python manage.py runserver
+```
+
+Open the application at:
+
+```text
+http://127.0.0.1:8000/
+```
+
+---
+
+## 🤖 Model Integration
+
+The application uses the fine-tuned **DistilBERT** model developed in the companion ML repository.
+
+The model performs **three-class sentiment classification**:
+
+```text
+0 → Negative
+1 → Neutral
+2 → Positive
+```
+
+The Django application handles:
+
+1. Loading the trained model and tokenizer
+2. Receiving user input
+3. Preprocessing the comment
+4. Tokenizing the input
+5. Running model inference
+6. Converting model output into a sentiment label
+7. Displaying the prediction to the user
+
+---
+
+## 📊 Model Information
+
+| Parameter               | Value                            |
+| ----------------------- | -------------------------------- |
+| Base Model              | `distilbert-base-uncased`        |
+| Task                    | 3-Class Sentiment Classification |
+| Classes                 | Positive, Neutral, Negative      |
+| Maximum Sequence Length | 90                               |
+| Framework               | PyTorch                          |
+| Transformers            | Hugging Face                     |
+
+For the complete training methodology and evaluation results, see the **[ML repository](https://github.com/Ankit-Kumar-Jha-01/NLP-model-for-MCA-eConsultation-Sentiment-Analysis)**.
+
+---
+
+## 🖥️ Application
+
+### Input
+
+The user enters an MCA eConsultation comment through the web interface.
+
+### Processing
+
+Django sends the comment through the integrated NLP inference pipeline.
+
+### Output
+
+The application displays the predicted sentiment:
+
+```text
+Comment
+   ↓
+Model
+   ↓
+Sentiment
+```
+
+Example:
+
+```text
+Input:
+"The proposed amendment will make compliance easier for small businesses."
+
+Prediction:
+Positive
+```
+
+---
+
+## ⚠️ Important Note
+
+The model was developed and evaluated using a **synthetic dataset created for prototyping**.
+
+The current model achieved very high evaluation scores on this dataset, but these results should **not be interpreted as production-level performance on real-world MCA submissions**.
+
+Real-world comments may contain:
+
+* Ambiguous language
+* Sarcasm
+* Mixed sentiments
+* Hindi or code-mixed text
+* Domain-specific terminology
+* Unseen writing patterns
+
+Therefore, further validation using genuine, unseen MCA consultation comments would be required before production deployment.
+
+---
+
+## 🚀 Future Improvements
+
+* 🌐 Deploy the application publicly
+* 🇮🇳 Support Hindi and code-mixed comments
+* 📊 Add sentiment analytics dashboard
+* 📈 Display confidence scores
+* 📁 Support batch comment analysis
+* 🔐 Add authentication and user management
+* 🔄 Improve model using real-world data
+* 📱 Improve mobile responsiveness
+* 🧪 Add automated testing
+* ⚡ Optimize inference for production
+
+---
+
+## 🔗 Project Repositories
+
+### 🧠 Model & Training
+
+**NLP-model-for-MCA-eConsultation-Sentiment-Analysis**
+
+Complete NLP pipeline including dataset preparation, preprocessing, augmentation, training, evaluation, and visualization.
+
+### 🌐 Django Application
+
+**MCA-eConsultation-Sentiment-Analysis-Django**
+
+Django web application integrating the trained model for real-time sentiment prediction.
+
+---
+
+## 👨‍💻 Author
+
+**Ankit Kumar Jha**
+
+B.Tech CSE — Data Science
+
+Interested in **Machine Learning, NLP, Data Science, and AI/ML Applications**.
+
+---
+
+## 📄 License
+
+This project is intended for educational and research purposes.
