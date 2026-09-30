@@ -1,119 +1,149 @@
-# 🏛️ MCA eConsultation - Sentiment Analysis Web Application
+<div align="center">
 
-A full-stack Django web application built for the **Ministry of Corporate Affairs (MCA)** e-Consultation Portal. This system processes public and stakeholder feedback on draft policy consultations, leveraging Machine Learning to run automated sentiment analysis, output detailed analytical charts, and generate interactive key summaries and word clouds for decision-makers.
+# 🏛️ MCA eConsultation Sentiment Analysis — Django Web Application
+
+**A Django-based web platform that serves the MCA eConsultation sentiment analysis model live — public comment submission, admin dashboard, and analytics**
+
+![Python](https://img.shields.io/badge/Python-3.13-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![DistilBERT](https://img.shields.io/badge/Model-DistilBERT-blue?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+
+</div>
 
 ---
 
 ## 🔗 Related Project Repositories
 
-This web application serves as the **frontend & application layer** for the sentiment analysis system. The machine learning model training, algorithm benchmarks, accuracy evaluation, and dataset preprocessing notebooks are maintained in a separate dedicated repository:
+This is the **application/deployment repo** — it serves a model trained in a separate repository. For training code, algorithms, preprocessing pipeline, and evaluation metrics, see:
 
-* **ML Model Training & Research Repository:** [MCA eConsultation ML Engine](https://github.com/your-username/mca-econsultation-ml) *(Replace with your ML repo link)*
-
----
-
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Key Features](#-key-features)
-- [Application Architecture](#-application-architecture)
-- [Prediction & Analytics Workflow](#-prediction--analytics-workflow)
-- [Tech Stack & Visualization Tools](#-tech-stack--visualization-tools)
-- [Project Structure](#-project-structure)
-- [Model Integration](#-model-integration)
-- [Installation & Setup](#-installation--setup)
-- [Application Screenshots](#-application-screenshots)
-- [Future Improvements](#-future-improvements)
+> 🧠 **ML Training Repo:** [`mca-econsultation-sentiment-analysis-ml`](<link-to-your-ML-repo>) — DistilBERT fine-tuning, leakage-free train/val/test split, augmentation pipeline, and evaluation results
 
 ---
 
-## 💡 Overview
+## 📑 Table of Contents
 
-Government e-consultation platforms receive large volumes of unstructured public feedback on proposed legislative policies and regulations. Manually reading and classifying every submission is slow and resource-intensive. 
-
-This platform automates stakeholder feedback processing by providing:
-1. **Public-Facing Portal:** Allows stakeholders to read draft consultation papers and submit their feedback online.
-2. **Internal Admin Portal:** Enables ministry officials to create consultation papers, view feedback metrics, run ML-based sentiment analysis, view word clouds, and analyze stakeholder sentiment distributions through interactive charts.
+1. [Overview](#-overview)
+2. [Requirements](#-requirements)
+3. [Application Architecture](#-application-architecture)
+4. [Features](#-features)
+5. [Prediction Workflow](#-prediction-workflow)
+6. [Visualization](#-visualization)
+7. [Technology Used](#-technology-used)
+8. [Project Structure](#-project-structure)
+9. [Installation & Setup](#-installation--setup)
+10. [Model Integration](#-model-integration)
+11. [Application](#-application)
+12. [Future Improvements](#-future-improvements)
 
 ---
 
-## ✨ Key Features
+## 🔎 Overview
 
-* **Public Consultation View:** Interface for public users to browse active policy consultation papers.
-* **Internal Admin Authentication:** Secure, role-based login system for authorized ministry personnel.
-* **Consultation Management:** Create, publish, view, and delete policy consultation papers.
-* **Automated Sentiment Classification:** Classifies public comments into **Positive**, **Neutral**, or **Negative** categories using integrated NLP models.
-* **Interactive Data Visualizations:** Real-time donut distribution charts, frequency bar charts, and word clouds.
-* **Ad-Hoc Sentiment Testing:** Built-in module for testing raw custom text against the sentiment engine on demand.
+This Django application brings the MCA eConsultation sentiment analysis model into a usable, live web platform. Citizens/stakeholders can submit comments on proposed rules through a **user panel**, while an **admin panel** lets administrators review submitted consultations, run sentiment analysis, view word clouds, and see summarized analytics — all backed by the DistilBERT model trained in the companion ML repo.
+
+The app is split into two Django apps:
+- **`user_panel`** — public-facing comment submission interface
+- **`admin_panel`** — authenticated dashboard for managing consultations, running analysis, and viewing reports
+
+---
+
+## ⚙️ Requirements
+
+- Python 3.13
+- Django (see `requirements.txt` for pinned version)
+- SQLite (bundled — no external DB server needed)
+- The trained model artifacts from the ML repo (tokenizer + fine-tuned DistilBERT weights)
+
+All Python dependencies are listed in [`requirements.txt`](./requirements.txt).
 
 ---
 
 ## 🏗️ Application Architecture
 
 ```
-                       ┌────────────────────────────────┐
-                       │   Public Stakeholder Portal   │
-                       └───────────────┬────────────────┘
-                                       │ Submits Feedback
-                                       ▼
- ┌─────────────────────────────────────────────────────────────────────────────┐
- │                           Django Application                                │
- │                                                                             │
- │  ┌────────────────────────┐                   ┌──────────────────────────┐  │
- │  │      User Panel        │                   │       Admin Panel        │  │
- │  │ (Public Consultations) │                   │  (Management & Analytics)│  │
- │  └───────────┬────────────┘                   └────────────┬─────────────┘  │
- └──────────────│─────────────────────────────────────────────│────────────────┘
-                │                                             │
-                ▼                                             ▼
-       ┌─────────────────┐                           ┌──────────────────┐
-       │ SQLite Database │                           │  ML Inference Engine │
-       │ (Consultations &│ ◄─────────────────────────┤  (`ml_model.py`) │
-       │    Feedback)    │   Classified Sentiments   └─────────┬────────┘
-       └─────────────────┘                                     │
-                                                               ▼
-                                                     ┌──────────────────┐
-                                                     │ Visualization &  │
-                                                     │  Summary Reports │
-                                                     └──────────────────┘
+                ┌─────────────────┐
+                │   User Panel     │  ← public comment submission
+                └────────┬─────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │   ml_model.py    │  ← loads DistilBERT, runs prediction
+                └────────┬─────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │   db.sqlite3     │  ← stores comments + predicted sentiment
+                └────────┬─────────┘
+                         │
+                         ▼
+                ┌─────────────────┐
+                │   Admin Panel    │  ← dashboard, analysis, word cloud, summary
+                └─────────────────┘
 ```
 
----
-
-## 🔄 Prediction & Analytics Workflow
-
-1. **Submission:** A stakeholder submits text feedback on an open policy consultation via the public portal.
-2. **Pre-processing:** Cleaned text data is extracted from the database and formatted for model evaluation.
-3. **Inference:** The text is passed into `ml_model.py`, which loads pre-trained model artifacts (vectorizer & classifier) to predict sentiment scores.
-4. **Aggregation:** Sentiments are recorded back to the database, updating aggregate counters (Positive, Neutral, Negative).
-5. **Visualization Rendering:** Chart libraries and word cloud engines synthesize the classification metadata into dynamic dashboard metrics and visual frequency distributions.
+- **`sentiment_analysis/`** (project package) — Django settings, URL routing, WSGI/ASGI entry points
+- **`user_panel/`** — models, views, and templates for public-facing comment submission
+- **`admin_panel/`** — models, views, and templates for the admin dashboard, analysis tools, and reporting
+- **`ml_model.py`** — central module that loads the trained model and exposes a prediction function used by both apps
 
 ---
 
-## 🛠️ Tech Stack & Visualization Tools
+## ✨ Features
 
-* **Backend Framework:** Django 6.0 (Python 3.13)
-* **Frontend UI:** HTML5, CSS3, JavaScript, Bootstrap 5
-* **Database:** SQLite3
-* **Machine Learning & Data Processing:**
-  * `scikit-learn` (Classification Algorithms)
-  * `nltk` / `spacy` (Text Preprocessing & NLP)
-  * `pandas` & `numpy` (Data Processing)
-  * `wordcloud` & `matplotlib` (Word Cloud Generation)
-* **Visualizations:** Chart.js (Donut Distribution & Frequency Bar Charts)
-* **Environment & Security:** `python-decouple` (Environment Variables)
+- 📝 Public comment submission form (user panel)
+- 🔐 Admin login and authenticated dashboard
+- 📋 Manage consultations — view and organize submitted comments
+- 🤖 Run sentiment analysis on submitted comments (Positive / Negative / Neutral)
+- ☁️ Word cloud visualization per sentiment category
+- 📊 Summary reports — sentiment distribution and key statistics
+- 💾 Persistent storage of comments and predictions via SQLite
 
 ---
 
-## 📁 Project Structure
+## 🔄 Prediction Workflow
 
-```text
+1. A user submits a comment through the **user panel** form
+2. The comment is saved to the database (`user_panel` models)
+3. The admin (or an automated trigger) initiates analysis from the **admin panel**
+4. `ml_model.py` loads the fine-tuned DistilBERT model and tokenizer, applies the same preprocessing pipeline used in training, and returns a predicted sentiment label
+5. The prediction is stored and linked back to the original comment
+6. The **admin dashboard** aggregates predictions into sentiment distribution stats, word clouds, and summary reports for review
+
+---
+
+## 📈 Visualization
+
+Rendered in the admin panel (`word_cloud.html`, `summary.html`, `sentiment_analysis.html`):
+- ☁️ Word clouds generated per sentiment class from submitted comments
+- 📊 Sentiment distribution summary (Positive / Negative / Neutral breakdown)
+- 📋 Tabular view of individual comment-level predictions for manual review
+
+*(Add real dashboard screenshots here once available, e.g. `![Dashboard](screenshots/dashboard.png)` — happy to wire these in with real filenames/images.)*
+
+---
+
+## 🧰 Technology Used
+
+| Category | Tools |
+|---|---|
+| Backend framework | ![Django](https://img.shields.io/badge/Django-092E20?logo=django&logoColor=white) |
+| Language | ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) |
+| Database | ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white) |
+| ML Model | ![DistilBERT](https://img.shields.io/badge/DistilBERT-blue) via 🤗 Transformers |
+| Frontend | Django Templates (HTML) |
+| Environment config | `.env` (via `python-decouple` / `django-environ`, or similar) |
+
+---
+
+## 🗂️ Project Structure
+
+```
 sentiment_analysis/
 │
-├── __pycache__/
-│   └── ml_model.cpython-313.pyc
-│
-├── admin_panel/               # Admin Portal App
+├── admin_panel/                  # Admin dashboard app
 │   ├── migrations/
 │   ├── templates/
 │   │   ├── analysis.html
@@ -126,141 +156,113 @@ sentiment_analysis/
 │   ├── admin.py
 │   ├── apps.py
 │   ├── models.py
+│   ├── tests.py
 │   ├── urls.py
 │   └── views.py
 │
-├── ml_model/                  # Directory storing trained model weights/vectorizers
+├── ml_model/                     # (model artifacts / tokenizer, loaded by ml_model.py)
 │
-├── sentiment_analysis/        # Root Project Configuration
+├── sentiment_analysis/           # Django project package
+│   ├── __init__.py
 │   ├── asgi.py
 │   ├── settings.py
 │   ├── urls.py
 │   └── wsgi.py
 │
-├── templates/                 # Global Base Layout Templates
+├── templates/                    # Shared/base templates
 │   ├── base.html
 │   └── base2.html
 │
-├── user_panel/                # Public User App
-│   ├── static/                # Static assets (images, CSS, JS)
+├── user_panel/                   # Public-facing app
+│   ├── migrations/
+│   ├── static/
 │   ├── templates/
 │   ├── admin.py
+│   ├── apps.py
 │   ├── models.py
+│   ├── tests.py
 │   ├── urls.py
 │   └── views.py
 │
-├── db.sqlite3                 # Local Database
-├── manage.py                  # Django Management Script
-├── ml_model.py                # Model Loading & Inference Script
-├── requirements.txt           # Project Dependencies
-├── .env                       # Local Environment File
+├── db.sqlite3
+├── manage.py
+├── ml_model.py                   # loads model + runs predictions
+├── requirements.txt
+├── .env                          # environment variables (not committed)
 └── .gitignore
 ```
 
 ---
 
-## 🤖 Model Integration
+## 🛠️ Installation & Setup
 
-The ML pipeline is integrated directly into Django through `ml_model.py`. 
-
-```python
-# Example interface overview in ml_model.py
-import joblib
-
-# Load pre-trained models and vectorizer
-VECTORIZER_PATH = 'ml_model/tfidf_vectorizer.pkl'
-MODEL_PATH = 'ml_model/sentiment_classifier.pkl'
-
-vectorizer = joblib.load(VECTORIZER_PATH)
-model = joblib.load(MODEL_PATH)
-
-def predict_sentiment(text: str) -> str:
-    """Processes input text and returns predicted sentiment class."""
-    cleaned_text = preprocess_text(text)
-    vectorized_text = vectorizer.transform([cleaned_text])
-    prediction = model.predict(vectorized_text)[0]
-    return prediction
-```
-
----
-
-## ⚙️ Installation & Setup
-
-### Prerequisites
-* Python 3.10+
-* Virtual Environment tool (`venv`)
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/mca-econsultation-web.git
-cd mca-econsultation-web/sentiment_analysis
-```
+# 1. Clone the repository
+git clone <your-django-repo-url>
+cd sentiment_analysis
 
-### 2. Set Up Virtual Environment
-```bash
-# Windows
+# 2. Create and activate a virtual environment
 python -m venv venv
-.\venv\Scripts\activate
+source venv/bin/activate        # On Windows: venv\Scripts\activate
 
-# macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-```bash
+# 3. Install dependencies
 pip install -r requirements.txt
-```
 
-### 4. Configure Environment Variables
-Create a `.env` file in the root `sentiment_analysis/` folder:
-```env
-SECRET_KEY=your-django-secret-key
-DEBUG=True
-ALLOWED_HOSTS=127.0.0.1,localhost
-```
+# 4. Set up environment variables
+cp .env.example .env            # then fill in SECRET_KEY, DEBUG, etc.
 
-### 5. Apply Migrations & Create Superuser
-```bash
-python manage.py makemigrations
+# 5. Apply database migrations
 python manage.py migrate
-python manage.py createsuperuser
-```
 
-### 6. Run the Server
-```bash
+# 6. Create a superuser (for admin panel access)
+python manage.py createsuperuser
+
+# 7. Run the development server
 python manage.py runserver
 ```
 
-Open `http://127.0.0.1:8000/` in your browser to access the portal.
+Then visit `http://127.0.0.1:8000/` for the user panel, and the admin login page for the dashboard.
 
 ---
 
-## 💻 Application Screenshots
+## 🔌 Model Integration
 
-| Public Consultation Portal | Authorised Admin Login |
-| :---: | :---: |
-| *(Public user view for reading papers & feedback)* | *(Secure login for ministry officers)* |
+- The fine-tuned DistilBERT model and tokenizer (trained in the [ML repo](<link-to-your-ML-repo>)) are loaded inside `ml_model.py`, placed in the `ml_model/` directory
+- `ml_model.py` exposes a prediction function that:
+  1. Applies the **same preprocessing pipeline** used during training (emoji removal, special character stripping, lowercasing) — for consistency between training and inference
+  2. Tokenizes the cleaned comment
+  3. Runs a forward pass through the model
+  4. Returns the predicted sentiment label (Positive / Negative / Neutral)
+- Both `user_panel` and `admin_panel` call into this shared module rather than duplicating model-loading logic
 
-| Consultation Management | Analytics Dashboard |
-| :---: | :---: |
-| *(Create & publish new policy documents)* | *(Real-time sentiment breakdown & word clouds)* |
+> ⚠️ Model weights are not committed to this repo (excluded via `.gitignore`) — download/copy them from the ML repo into `ml_model/` before running locally.
 
-| Sentiment Visualizations |
-| :---: |
-| *(Donut distribution & frequency bar charts)* |
+---
+
+## 🖥️ Application
+
+*(Add screenshots of the live application here — login page, dashboard, comment submission form, sentiment analysis view, word cloud, and summary report. Example:)*
+
+```markdown
+![Dashboard](screenshots/dashboard.png)
+![Word Cloud View](screenshots/word_cloud.png)
+![Summary Report](screenshots/summary.png)
+```
 
 ---
 
 ## 🚀 Future Improvements
 
-* **Multilingual Support:** Extend sentiment prediction to support local Indian languages (Hindi, Bengali, Tamil, etc.).
-* **Aspect-Based Sentiment Analysis (ABSA):** Pinpoint exact policy clauses receiving negative feedback.
-* **PDF Analysis Engine:** Automatically extract stakeholder feedback submitted as attached PDF letters/documents.
-* **REST API Export:** Provide secure endpoints for exporting sentiment metrics to external government dashboard portals.
+- 🔄 Replace local model loading with a dedicated inference API/microservice for scalability
+- 🗄️ Migrate from SQLite to PostgreSQL for production deployment
+- 📈 Add real-time analytics updates instead of on-demand analysis runs
+- 🔐 Add role-based access control for multiple admin permission levels
+- 🌐 Deploy publicly (e.g. Render, Railway, or AWS) with CI/CD
+- 📱 Add a responsive/mobile-friendly UI for the public comment submission form
+- 🧪 Add automated tests for prediction consistency between this app and the ML training repo
 
 ---
 
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+<div align="center">
+Django application for the MCA eConsultation Sentiment Analysis project
+</div>
